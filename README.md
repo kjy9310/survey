@@ -31,13 +31,13 @@ Then run the following commands:
 ```bash
 $ mkdir myApp
 $ cd myApp
-$ git clone https://github.com/McMenemy/GoDoRP.git .
+$ git clone https://github.com/kjy9310/survey.git .
 $ docker-compose up
-
 ```
+
 Then you can open the React frontend at localhost:3000 and the RESTful GoLang API at localhost:5000
 
 Then to build production images set arguments in docker-compose to production
 
 ## ER diagram
-* [Image](https://github.com/kjy9310/survey/blob/master/ERD.bmp)
+* [Image](https://raw.githubusercontent.com/kjy9310/survey/master/ERD.bmp)

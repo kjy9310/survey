@@ -30,14 +30,16 @@ func Signin(c *gin.Context) (interface{}, error) {
 func Signup(c *gin.Context)  {
 	var loginVals login
 	if err := c.ShouldBind(&loginVals); err != nil {
-		c.JSON(422, gin.H{"status": 422, "message": "invalid data"})
+		c.AbortWithStatusJSON(422, gin.H{"code": 422, "message": "invalid data"})
+		return
 	}
 	var publisher model.Publisher
 	publisher.Name = loginVals.Username
 	publisher.Password = loginVals.Password
 	success := model.InsertPublisher(publisher)
 	if (success) {
-		c.JSON(200, gin.H{"status": 200, "message": "registration successful"})
+		c.JSON(200, gin.H{"code": 200, "message": "registration successful"})
+		return
 	}
-	c.AbortWithStatusJSON(500, gin.H{"status": "data insertion error"})
+	c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "data insertion error"})
 }

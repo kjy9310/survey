@@ -68,42 +68,52 @@ func GetSurvey(surveyId int, publisherId int) (Survey, bool){
 	return result, false
 }
 
-func InsertSurvey(survey Survey) bool {
-	log.Println("Insert data")
-
-	stmk, err := db.Con.Prepare("INSERT INTO survey(publisher_id, is_deleted) VALUES(? ,false)")
+func InsertSurvey(survey Survey, publisherId int) (bool, int) {
+	stmk, err := db.Con.Prepare("INSERT INTO survey(publisher_id, is_deleted) SELECT id ,false from publisher where publisher.id = ? ")
 	if err != nil {
 		log.Println("error on statement creation",err)
-		return false
+		return false, 0
 	}
 	defer stmk.Close()
-	res, err := stmk.Exec(survey.PublisherId)
+	res, err := stmk.Exec(publisherId)
 	if err != nil {
 		log.Println("error on insert",err)
-		return false
+		return false, 0
 	}
 	surveyId, err := res.LastInsertId()
+	log.Println("surveyId", surveyId)
 	if err != nil {
 		log.Println("error on insert-get id",err)
-		return false
+		return false, 0
 	}
 	survey.Id = int(surveyId)
+	if survey.Id == 0 {
+		log.Println("InsertSurvey inserted data not exist",err)
+		return false, 0
+	}
 	historyResult := addSurveyHistory(survey)
-	// if historyResult == false {
-	// 	log.Println("error on insert-addSurveyHistory",err)
-	// 	return false
-	// }
-	return historyResult
+	return historyResult, survey.Id
 }
 
 func addSurveyHistory(survey Survey) bool {
-	stmkHistory, err := db.Con.Prepare("INSERT INTO survey_history (survey_id, title, description) VALUES(?, ?, ?)")
+	stmkHistoryUpdate, err := db.Con.Prepare("UPDATE survey_history set deleted_at = now() where survey_id = ? and deleted_at='99991231'")
 	if err != nil {
 		log.Println("error on statement creation history",err)
 		return false
 	}
-	defer stmkHistory.Close()
-	_, err = stmkHistory.Exec(survey.Id, survey.Title, survey.Description)
+	defer stmkHistoryUpdate.Close()
+	_, err = stmkHistoryUpdate.Exec(survey.Id)
+	if err != nil {
+		log.Println("error on update history",err)
+		return false
+	}
+	stmkHistoryInsert, err := db.Con.Prepare("INSERT INTO survey_history (survey_id, title, description) VALUES(?, ?, ?)")
+	if err != nil {
+		log.Println("error on statement creation history",err)
+		return false
+	}
+	defer stmkHistoryInsert.Close()
+	_, err = stmkHistoryInsert.Exec(survey.Id, survey.Title, survey.Description)
 	if err != nil {
 		log.Println("error on insert history",err)
 		return false

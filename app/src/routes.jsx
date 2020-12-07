@@ -1,10 +1,10 @@
 import React from 'react';
-import { Router, Route, Switch, Redirect } from "react-router-dom"
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom"
 import Main from './components/Main';
 import Login from './components/Login';
 import Register from './components/Register';
-import ManageSurvey from './components/ManageSurvey';
-import { createBrowserHistory } from 'history'
+import ManageSurveyList from './containers/ManageSurveyList';
+import ManageSurvey from './containers/ManageSurvey';
 import Auth from './components/Auth'
 
 class Routes extends React.Component {
@@ -13,22 +13,19 @@ class Routes extends React.Component {
     this.state={
       auth:Auth.getCurrentUser(),
     }
-    // this.onSearch = this.onSearch.bind(this);
   }
+
   render() {
-    const history= createBrowserHistory()
-    const routes = (
+    return <BrowserRouter>
       <Switch>
         <Route path='/' exact component={Main} />
-        <Route path='/login' render={()=><Login history={history} loginCallback={(auth)=>{this.setState({auth})}}/>} />
-        <Route path='/register' component={Register} />
+        <Route path='/login' render={()=><Login />} />
+        <Route path='/register' render={()=><Register />} />
         {/* <Route path='/survey' exact component={Survey} /> */}
-        <PrivateRoute history={history} auth={this.state.auth} path='/manage' component={ManageSurvey} />
+        <PrivateRoute auth={this.state.auth} path='/manage/survey/:id' component={ManageSurvey} />
+        <PrivateRoute auth={this.state.auth} path='/manage' component={ManageSurveyList} />
       </Switch>
-    )
-    return <Router history={history}>
-      {routes}
-    </Router>
+    </BrowserRouter>
   }
 }
 

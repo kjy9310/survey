@@ -13,7 +13,7 @@ func TestDB(c *gin.Context) {
 
 	if !err {
 		log.Println(err)
-		c.AbortWithStatusJSON(500, gin.H{"status": "UnknownError"})
+		c.AbortWithStatusJSON(500, gin.H{"message": "UnknownError"})
 		return
 	}
 

@@ -3,7 +3,7 @@ grant all PRIVILEGES ON *.* TO 'api'@'%';
 FLUSH PRIVILEGES;
 
 -- MySQL Workbench Forward Engineering
-
+Drop schema `survey`;
 -- -----------------------------------------------------
 -- Schema survey
 -- -----------------------------------------------------
@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS `survey`.`publisher` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(255) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
-  `token` VARCHAR(255) NULL,
   `created_at` DATETIME NOT NULL DEFAULT current_timestamp,
+  `updated_at` DATETIME NOT NULL DEFAULT current_timestamp on update current_timestamp,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `name_UNIQUE` (`name` ASC) VISIBLE)
 ENGINE = InnoDB;
@@ -113,17 +113,17 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `survey`.`question_history` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `questions_id` INT NOT NULL,
+  `question_id` INT NOT NULL,
   `type_id` INT NOT NULL,
   `title` VARCHAR(255) NOT NULL,
   `created_at` DATETIME NOT NULL DEFAULT current_timestamp,
   `deleted_at` DATETIME NOT NULL DEFAULT 99991231,
   PRIMARY KEY (`id`),
-  INDEX `fk_question_info_questions1_idx` (`questions_id` ASC) VISIBLE,
+  INDEX `fk_question_info_questions1_idx` (`question_id` ASC) VISIBLE,
   INDEX `fk_question_info_types1_idx` (`type_id` ASC) VISIBLE,
-  UNIQUE INDEX `unique_question_current` (`questions_id` ASC, `deleted_at` ASC) VISIBLE,
+  UNIQUE INDEX `unique_question_current` (`question_id` ASC, `deleted_at` ASC) VISIBLE,
   CONSTRAINT `fk_question_info_questions1`
-    FOREIGN KEY (`questions_id`)
+    FOREIGN KEY (`question_id`)
     REFERENCES `survey`.`question` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,

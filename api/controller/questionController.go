@@ -12,12 +12,12 @@ func GetQuestionList(c *gin.Context) {
 	surveyIdString := c.DefaultQuery("survey_id", "")
 	surveyId, err := strconv.Atoi(surveyIdString)
 	if err != nil {
-		c.AbortWithStatusJSON(400, gin.H{"code": 400, "message": "invalid params"})
+		c.AbortWithStatusJSON(422, gin.H{"code": 422, "message": "InvalidRequest"})
 		return 
 	}
 	questionList, success := model.GetQuestionList(surveyId, publisherId)
 	if (!success) {
-		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "data insertion error"})
+		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "UnknownError"})
 		return
 	}
 	c.JSON(200, gin.H{"code": 200, "result": questionList})
@@ -28,12 +28,12 @@ func GetQuestion(c *gin.Context) {
 	questionIdParam := c.Param("id")
 	questionId, err := strconv.Atoi(questionIdParam)
 	if err != nil {
-		c.AbortWithStatusJSON(404, gin.H{"code": 404, "message": "survey not exist"})
+		c.AbortWithStatusJSON(422, gin.H{"code": 422, "message": "InvalidRequest"})
 		return
 	}
 	question, success := model.GetQuestion(questionId, publisherId)
 	if (!success) {
-		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "data insertion error"})	
+		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "UnknownError"})	
 		return
 	}
 	c.JSON(200, gin.H{"code": 200, "result": question})
@@ -45,19 +45,19 @@ func PostQuestion(c *gin.Context){
 	
 	if err := c.ShouldBind(&question); err != nil {
 		log.Println("PostQuestion -> binding error ", err)
-		c.AbortWithStatusJSON(400, gin.H{"code": 400, "message": "invalid input"})
+		c.AbortWithStatusJSON(422, gin.H{"code": 422, "message": "InvalidRequest"})
 		return
 	}
 	log.Println("PostQuestion -> question", question)
 	
 	success, questionId := model.InsertQuestion(question, publisherId)
 	if (!success) {
-		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "data insertion error"})
+		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "UnknownError"})
 		return
 	}
 	newQuestion, success := model.GetQuestion(questionId, publisherId)
 	if (!success) {
-		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "data getting error"})
+		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "UnknownError"})
 		return
 	}
 	c.JSON(200, gin.H{"code": 200, "result": newQuestion})
@@ -68,19 +68,19 @@ func PutQuestion(c *gin.Context){
 	var question model.Question
 	if err := c.Bind(&question); err != nil {
 		log.Println("PutQuestion -> binding error ", err)
-		c.AbortWithStatusJSON(400, gin.H{"code": 200, "message": "invalid input"})
+		c.AbortWithStatusJSON(422, gin.H{"code": 422, "message": "InvalidRequest"})
 		return
 	}
 	log.Println("PutQuestion param:", question)
 	
 	success, questionId := model.UpdateQuestion(question, publisherId)
 	if (!success) {
-		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "data update error"})
+		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "UnknownError"})
 		return
 	}
 	newQuestion, success := model.GetQuestion(questionId, publisherId)
 	if (!success) {
-		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "data get error"})	
+		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "UnknownError"})	
 		return
 	}
 	c.JSON(200, gin.H{"code": 200, "result": newQuestion})
@@ -91,12 +91,12 @@ func DeleteQuestion(c *gin.Context) {
 	questionIdParam := c.Param("id")
 	questionId, err := strconv.Atoi(questionIdParam)
 	if err != nil {
-		c.AbortWithStatusJSON(404, gin.H{"code": 404, "message": "survey not exist"})
+		c.AbortWithStatusJSON(422, gin.H{"code": 422, "message": "InvalidRequest"})
 		return
 	}
 	success := model.DeleteQuestion(questionId, publisherId)
 	if (!success) {
-		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "data insertion error"})
+		c.AbortWithStatusJSON(500, gin.H{"code": 500, "message": "UnknownError"})
 		return
 	}
 	c.JSON(200, gin.H{"code": 200, "result": "success"})

@@ -1,11 +1,12 @@
-import React from 'react';
+import React from 'react'
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom"
-import Main from './components/Main';
-import Login from './components/Login';
-import Register from './components/Register';
+import Main from './components/Main'
+import Login from './components/Login'
+import Register from './components/Register'
 import ManageSurveyList from './containers/ManageSurveyList';
-import ManageSurvey from './containers/ManageSurvey';
+import ManageSurvey from './containers/ManageSurvey'
 import Auth from './components/Auth'
+import Survey from './containers/Survey'
 
 class Routes extends React.Component {
   constructor(props) {
@@ -21,7 +22,7 @@ class Routes extends React.Component {
         <Route path='/' exact component={Main} />
         <Route path='/login' render={()=><Login />} />
         <Route path='/register' render={()=><Register />} />
-        {/* <Route path='/survey' exact component={Survey} /> */}
+        <Route path='/survey/:id' component={Survey} />
         <PrivateRoute auth={this.state.auth} path='/manage/survey/:id' component={ManageSurvey} />
         <PrivateRoute auth={this.state.auth} path='/manage' component={ManageSurveyList} />
       </Switch>

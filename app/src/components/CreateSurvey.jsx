@@ -1,30 +1,46 @@
-import React, { useEffect } from 'react'
-import { useHistory } from "react-router-dom"
+import React, { useEffect, useState } from 'react'
 import Request from './Request'
 import Input from './Input'
 
 function CreateSurvey(props) {
-  const history = useHistory()
-  const [title, titleInput] = Input({ type: "text" })
-  const [description, descriptionInput] = Input({ type: "text" })
-
-  useEffect(() => {
-    // on mount
-    // const surveyList = Request.get("survey")
-    
-  }, []);
-
+  const {
+    title:defaultTitle,
+    description:defaultDescription
+  } = props.survey||{}
+  
+  const [title, titleInput, setTitle] = Input({ type: "text" })
+  const [description, setDescription] = useState("")
+  
+  useEffect(()=>{
+    setDescription(defaultDescription)
+    setTitle(defaultTitle)
+  },[defaultTitle, defaultDescription])
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try{
-      const response = await Request.post("survey", {title, description})
-      console.log("response", response)
-      console.log("push to manage")
-      history.push({pathname:"/manage"});
-    }catch(err){
-      console.log(err)
+    if (props.editMode) {
+      try{
+        const survey = props.survey
+        const params = {
+          ...survey,
+          title,
+          description
+        }
+        const response = await Request.put("survey/"+survey.id, params)
+        console.log("response", response)
+        props.submitCallback()
+      }catch(err){
+        console.log(err)
+      }
+    } else {
+      try{
+        const response = await Request.post("survey", {title, description})
+        console.log("response", response)
+        props.submitCallback()
+      }catch(err){
+        console.log(err)
+      }
     }
-    props.submitCallback()
   }
 
   return (
@@ -35,7 +51,7 @@ function CreateSurvey(props) {
       </label>
       <label>
         description:
-        {descriptionInput}
+        <textArea onChange={(e)=>setDescription(e.target.value)} />
       </label>
       <input type="submit" value="Submit" />
     </form>

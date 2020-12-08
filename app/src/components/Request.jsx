@@ -50,6 +50,40 @@ class Request {
     console.log("resdata post", endpoint, '=>', resultData)
     return resultData
   }
+  async put(endpoint, requestData){
+    const headers = Auth.getHeader()
+    const resultData = await axios.put(API_URL+endpoint, requestData ,{ headers })
+    .then(response => {
+      if(response.status===200){
+        return response.data
+      } else {
+        requestErrorHandle(response)
+        return 
+      }
+    }).catch((err)=>{
+      console.log('!!!!ERR catched!!!!',err)
+      requestErrorHandle(err.response)
+    })
+    console.log("resdata put", endpoint, '=>', resultData)
+    return resultData
+  }
+  async delete(endpoint){
+    const headers = Auth.getHeader()
+    const resultData = await axios.delete(API_URL+endpoint, { headers })
+    .then(response => {
+      if(response.status===200){
+        return response.data
+      } else {
+        requestErrorHandle(response)
+        return 
+      }
+    }).catch((err)=>{
+      console.log('!!!!ERR catched!!!!',err)
+      requestErrorHandle(err.response)
+    })
+    console.log("resdata delete", endpoint, '=>', resultData)
+    return resultData
+  }
   
 }
 

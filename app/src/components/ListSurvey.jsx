@@ -1,7 +1,7 @@
 import React from 'react';
 import { useHistory } from "react-router-dom";
 
-function ListSurvey({list}) {
+function ListSurvey({list, deleteSurvey}) {
   const history = useHistory()
   const onClickSurvey = (surveyId)=>{
     history.push("/manage/survey/"+surveyId)
@@ -12,8 +12,11 @@ function ListSurvey({list}) {
             return <li>
               <div onClick={()=>onClickSurvey(survey.id)}>
                 <span>{survey.title}</span>
-                <span>{survey.description}</span>
+                <p>{survey.description}</p>
               </div>
+              <button onClick={()=>deleteSurvey(survey.id)}>
+                x
+              </button>
             </li>
         })}
     </ul>

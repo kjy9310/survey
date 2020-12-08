@@ -200,3 +200,5 @@ CREATE TABLE IF NOT EXISTS `survey`.`answer` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+INSERT INTO `survey`.`type` (`name`, `code`) VALUES ('single choice', 'single_choice')

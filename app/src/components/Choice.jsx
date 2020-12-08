@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import Input from './Input'
 
-function Choice({onChangeCallback, editable, deleteOption}) {
-  const [optionName, optionNameInput] = Input({ type: "text" })
+function Choice({onChangeCallback, deleteOption, choice}) {
+  const [optionName, optionNameInput, setOptionName] = Input({ type: "text", defaultValue: choice.option_name })
   
   useEffect(() => {
     onChangeCallback(optionName)
@@ -14,7 +14,7 @@ function Choice({onChangeCallback, editable, deleteOption}) {
         optionName:
         {optionNameInput}
       </label>
-      {editable&&deleteOption&&<button onClick={deleteOption}>
+      {deleteOption&&<button onClick={deleteOption}>
         -
       </button>}
     </li>

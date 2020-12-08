@@ -7,17 +7,17 @@ import (
 
 type Question struct {
 	Id   		int			`json:"id"`
-	SurveyId 	int			`json:"surveyId"`
+	SurveyId 	int			`json:"survey_id"`
 	Title 		string		`json:"title"`
-	TypeId 		int			`json:"typeId"`
+	TypeId 		int			`json:"type_id"`
 	Type 		string		`json:"type"`
 	Choices		[]Choice	`json:"choices"`
 }
 
 type Choice struct {
 	Id			int		`json:"id"`
-	QuestionId	int		`json:"questionId"`
-	OptionName	int		`json:"optionName"`
+	QuestionId	int		`json:"question_id"`
+	OptionName	string	`json:"option_name"`
 }
 
 func GetQuestionList(SurveyId int, PublisherId int) ([]Question, bool){
@@ -138,14 +138,13 @@ func GetQuestion(questionId int, publisherId int) (Question, bool){
 	}
 
 	if questionRes.Next() {
-		var singleResult Question
-		err := questionRes.Scan(&singleResult.Id, &singleResult.SurveyId, &singleResult.Title, &singleResult.TypeId, &singleResult.Type)
+		err := questionRes.Scan(&result.Id, &result.SurveyId, &result.Title, &result.TypeId, &result.Type)
 		if err != nil {
 			log.Println("GetQuestionList err!")
 			log.Println(err)
 			return result, false
 		}
-		singleResult.Choices = choices
+		result.Choices = choices
 		
 		return result, true
 	}
@@ -156,7 +155,9 @@ func GetQuestion(questionId int, publisherId int) (Question, bool){
 func InsertQuestion(question Question, publisherId int) (bool, int) {
 	log.Println("InsertQuestion started")
 	insertQuestionSql := `INSERT INTO question (survey_id, is_deleted) 
-	SELECT survey.id, false from survey inner join publisher on publisher.id = survey.publisher_id and publisher.id = ? and survey.id = ?`
+	SELECT survey.id, false from survey 
+	inner join publisher on publisher.id = survey.publisher_id 
+	where survey.id = ? and publisher.id = ? `
 	stmk, err := db.Con.Prepare(insertQuestionSql)
 	if err != nil {
 		log.Println("error on statement creation",err)
@@ -170,7 +171,7 @@ func InsertQuestion(question Question, publisherId int) (bool, int) {
 		return false, 0
 	}
 	questionId, err := res.LastInsertId()
-	log.Println("questionId", questionId)
+	log.Println("InsertQuestion questionId", questionId)
 	if err != nil {
 		log.Println("error on insert-get id",err)
 		return false, 0
@@ -196,6 +197,67 @@ func InsertQuestion(question Question, publisherId int) (bool, int) {
 	}
 
 	return true, question.Id
+}
+
+func UpdateQuestion(question Question, publisherId int) (bool, int) {
+	log.Println("UpdateQuestion started")
+	_ = deleteQuestionHistory(question.Id)
+	historyResult := addQuestionHistory(question)
+	if !historyResult {
+		return false, 0
+	}
+	_ = deleteAllChoiceHistory(question.Id)
+	for _, choice := range question.Choices{
+		choice.QuestionId = question.Id
+		if choice.Id == 0 {
+			success,_ := insertChoice(choice)
+			if !success {
+				return false, 0
+			}
+		} else {
+			historyChoiceResult := addChoiceHistory(choice)
+			if !historyChoiceResult {
+				return false, 0
+			}
+		}
+	}
+	return true, question.Id
+}
+
+func DeleteQuestion(questionId int, publisherId int) bool {
+	log.Println("DeleteQuestion ==")
+	sql := `
+	UPDATE question inner join survey on survey.id = question.survey_id
+	SET question.is_deleted = true where question.id = ? and survey.publisher_id = ?
+	`
+	stmk, err := db.Con.Prepare(sql)
+	if err != nil {
+		log.Println("error on delete1",err)
+		return false
+	}
+	defer stmk.Close()
+	_, err = stmk.Exec(questionId, publisherId)
+	if err != nil {
+		log.Println("error on delete2",err)
+		return false
+	}
+	_ = deleteQuestionHistory(questionId)
+	return true
+}
+
+func deleteQuestionHistory(questionId int) bool {
+	stmkHistoryUpdate, err := db.Con.Prepare("UPDATE question_history set deleted_at = now() where question_id = ? and deleted_at='99991231'")
+	if err != nil {
+		log.Println("error on statement creation history",err)
+		return false
+	}
+	defer stmkHistoryUpdate.Close()
+	_, err = stmkHistoryUpdate.Exec(questionId)
+	if err != nil {
+		log.Println("error on update history",err)
+		return false
+	}
+	return true
 }
 
 func addQuestionHistory(question Question) bool {
@@ -252,6 +314,27 @@ func insertChoice(choice Choice) (bool, int) {
 	}
 	historyResult := addChoiceHistory(choice)
 	return historyResult, choice.Id
+}
+
+func deleteAllChoiceHistory(questionId int) bool {
+	sql := `
+	UPDATE choice_history inner join choice on choice.id = choice_history.choice_id
+	set deleted_at = now() 
+	where choice.question_id = ? 
+	and choice_history.deleted_at='99991231'
+	`
+	stmkHistoryUpdate, err := db.Con.Prepare(sql)
+	if err != nil {
+		log.Println("error on deleteAllChoiceHistory 1",err)
+		return false
+	}
+	defer stmkHistoryUpdate.Close()
+	_, err = stmkHistoryUpdate.Exec(questionId)
+	if err != nil {
+		log.Println("error on deleteAllChoiceHistory 2",err)
+		return false
+	}
+	return true
 }
 
 func addChoiceHistory(choice Choice) bool {

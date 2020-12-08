@@ -1,10 +1,8 @@
 import React from 'react'
-import { useHistory } from "react-router-dom"
 import Auth from './Auth'
 import Input from './Input'
 
 function Login() {
-  const history = useHistory()
   const [username, usernameInput] = Input({ type: "text" });
   const [password, passwordInput] = Input({ type: "password" });
   

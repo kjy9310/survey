@@ -21,12 +21,25 @@ function ManageSurveyList(props) {
     }
   }
 
+  const deleteSurvey = async (survey_id) => {
+    const surveyDeleteResponse = await Request.delete("survey/"+survey_id)
+    console.log(surveyDeleteResponse)
+    if (surveyDeleteResponse.code===200){
+      getSurveyList()
+    }
+  }
+
   console.log('surveyList', surveyList)
   return (
     <div>
         <button onClick={()=>setShowCreateSurvey(true)}>Create Survey</button>
-        {showCreateSurvey&&<CreateSurvey submitCallback={()=>setShowCreateSurvey(false)}/>}
-        <ListSurvey list={surveyList}/>
+        {showCreateSurvey&&<CreateSurvey
+          submitCallback={()=>{
+            setShowCreateSurvey(false)
+            getSurveyList()
+          }}
+        />}
+        <ListSurvey list={surveyList} deleteSurvey={deleteSurvey}/>
     </div>
   );
 

@@ -7,14 +7,14 @@ function ListSurvey({list, deleteSurvey}) {
     history.push("/manage/survey/"+surveyId)
   }
   return (
-    list&&<ul>
+    list&&<ul className="survey-list-ul">
         {list.length>0&&list.map((survey)=>{
-            return <li>
-              <div onClick={()=>onClickSurvey(survey.id)}>
-                <span>{survey.title}</span>
-                <p>{survey.description}</p>
+            return <li className="survey-list-ul-li">
+              <div className="survey-list-ul-li-content" onClick={()=>onClickSurvey(survey.id)}>
+                <span className="survey-list-ul-li-content-title">{survey.title}</span>
+                <p className="survey-list-ul-li-content-description">{survey.description}</p>
               </div>
-              <button onClick={()=>deleteSurvey(survey.id)}>
+              <button className=".survey-list-ul-li-button-delete" onClick={()=>deleteSurvey(survey.id)}>
                 x
               </button>
             </li>

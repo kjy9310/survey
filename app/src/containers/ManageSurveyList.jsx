@@ -31,8 +31,9 @@ function ManageSurveyList(props) {
 
   console.log('surveyList', surveyList)
   return (
-    <div>
-        <button onClick={()=>setShowCreateSurvey(true)}>Create Survey</button>
+    <div className="survey-list">
+      <span className="survey-list-title"> Survey List </span>
+        <button className="survey-list-button-add" onClick={()=>setShowCreateSurvey(true)}>New</button>
         {showCreateSurvey&&<CreateSurvey
           submitCallback={()=>{
             setShowCreateSurvey(false)

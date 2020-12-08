@@ -9,15 +9,16 @@ function ViewQuestion({
   const {
     title,
     choices,
-    id
+    id,
+    answer
   } = question
   
   return (
-    <div onClick={onClickCallback}>
-      <span>{title}</span>
-      <div>
+    <div className={`question ${answer?"answered":""}`} onClick={onClickCallback}>
+      <span className="question-title">{title}</span>
+      <div className="question-choices">
         {choices.map((choice)=>{
-          return <label>
+          return <label className="question-choices-choice">
             <input
               onChange={(e)=>optionSelectedCallback(e.target.value)}
               name={`option${id}`}

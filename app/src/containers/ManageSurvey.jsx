@@ -45,7 +45,8 @@ function ManageSurvey(props) {
   }
   
   return (
-    <div>
+    <div className="survey-detail">
+      <span className="survey-detail-title">Survey Detail</span>
       <CreateSurvey
         editMode={true}
         survey={surveyDetail}
@@ -54,7 +55,8 @@ function ManageSurvey(props) {
           getSurveyDetail()
         }}
       />
-      <button onClick={()=>setShowCreateQuestion(true)}>Create Question</button>
+      <span className="survey-detail-title">Question list</span>
+      <button className="survey-detail-button-add" onClick={()=>setShowCreateQuestion(true)}>Create Question</button>
       {showCreateQuestion&&<CreateQuestion
         question={{ title:"", choices:[] }}
         surveyId={props.match.params.id}

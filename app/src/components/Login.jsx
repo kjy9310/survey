@@ -8,6 +8,9 @@ function Login() {
   
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (!username || !password){
+      alert("please check the login id or password.")
+    }
     try{
       const response = await Auth.login({
         username, password
@@ -15,23 +18,27 @@ function Login() {
       console.log('response', response, response.code===200)
       if(response.code===200){
         window.location.replace("/manage")
+      }else{
+        alert("please check the login id or password.")
       }
     }catch(err){
       console.log(err)
     }
   }
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Name:
-        {usernameInput}
-      </label>
-      <label>
-        Password:
-        {passwordInput}
-      </label>
-      <input type="submit" value="Submit" />
-    </form>
+    <div className="login-form">
+      <form onSubmit={handleSubmit}>
+        <label>
+          Username
+          {usernameInput}
+        </label>
+        <label>
+          Password
+          {passwordInput}
+        </label>
+        <input className="login-form-button" type="submit" value="Login" />
+      </form>
+    </div>
   );
 
 }

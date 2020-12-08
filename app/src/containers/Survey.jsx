@@ -9,6 +9,7 @@ function ManageSurvey(props) {
   const [surveyData, setSurveyData] = useState({})
   const [name, nameInput] = Input({ type: "text" })
   const [email, emailInput] = Input({ type: "email" })
+  const [checkMode, setCheckMode] = useState(false)
 
   useEffect(()=>{
     getSurveyData()
@@ -35,13 +36,20 @@ function ManageSurvey(props) {
       })
     })
   }
-  
-  const submitSurvey = async() =>{
+
+  const validate = () => {
     const notAnsweredQuestion = surveyData.questions.find((question)=>!question.answer)
     if (notAnsweredQuestion){
-      alert("please select answer for all questions")
+      alert("please answer all questions.")
+      return
+    } else if (!name || !email) {
+      alert("please enter name and email address.")
       return
     }
+    setCheckMode(true)
+  }
+
+  const submitSurvey = async() =>{ 
     const params = {
       name,
       email,
@@ -64,29 +72,35 @@ function ManageSurvey(props) {
   }
 
   return (
-    <div>
-      <div>
-        <label>
-          name : {nameInput}
+    <div className="survey-list">
+      {checkMode&&<span className="survey-list-message">Please check the answers before submit</span>}
+      <div className="survey-list-top-group">
+        <label className="survey-list-top-group-label">
+          name {checkMode?`: ${name}`:nameInput}
         </label>
-        <label>
-          email : {emailInput}
+        <label className="survey-list-top-group-label">
+          email {checkMode?`: ${email}`:emailInput}
         </label>
       </div>
       {surveyData.survey&&<div>
-        <title>{surveyData.survey.title}</title>
-        <p>{surveyData.survey.description}</p>
+        <span className="survey-list-title">{surveyData.survey.title}</span>
+        <p className="survey-list-description">{surveyData.survey.description}</p>
       </div>}
       {surveyData.questions&&surveyData.questions.length>0&&surveyData.questions.map((question, index)=>{
         return <div key={`surveyquestion${index}`}>
           <ViewQuestion
-            selectable={true}
+            selectable={!checkMode}
             question={question}
             optionSelectedCallback={(choice_id)=>setAnswer(index, choice_id)}
           />
         </div>
       })}
-      <button onClick={submitSurvey}>Submit</button>
+      {checkMode
+      ?<div>
+        <button className="survey-list-button-submit" onClick={submitSurvey}>Submit</button>
+        <button className="survey-list-button-cancel" onClick={()=>setCheckMode(false)}>Cancel</button>
+      </div>
+      :<button className="survey-list-button-submit" onClick={validate}>Submit</button>}
     </div>
   );
 

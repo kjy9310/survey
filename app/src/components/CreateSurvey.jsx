@@ -44,17 +44,19 @@ function CreateSurvey(props) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        title:
-        {titleInput}
-      </label>
-      <label>
-        description:
-        <textArea onChange={(e)=>setDescription(e.target.value)} />
-      </label>
-      <input type="submit" value="Submit" />
-    </form>
+    <div className="survey-box">
+      <form onSubmit={handleSubmit}>
+        <label>
+          title:
+          {titleInput}
+        </label>
+        <label>
+          description:
+          <textarea onChange={(e)=>setDescription(e.target.value)} />
+        </label>
+        <input type="submit" value="Save" />
+      </form>
+    </div>
   );
 
 }

@@ -2,19 +2,19 @@ import React, { useEffect } from 'react'
 import Input from './Input'
 
 function Choice({onChangeCallback, deleteOption, choice}) {
-  const [optionName, optionNameInput, setOptionName] = Input({ type: "text", defaultValue: choice.option_name })
+  const [optionName, optionNameInput] = Input({ type: "text", defaultValue: choice.option_name })
   
   useEffect(() => {
     onChangeCallback(optionName)
   })
 
   return (
-    <li>
-      <label>
+    <li className="question-edit-box-choices-choice-li">
+      <label className="question-edit-box-label">
         optionName:
         {optionNameInput}
       </label>
-      {deleteOption&&<button onClick={deleteOption}>
+      {deleteOption&&<button className="question-edit-box-button-del" onClick={deleteOption}>
         -
       </button>}
     </li>

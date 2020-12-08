@@ -57,10 +57,12 @@ function CreateQuestion({surveyId, question, editMode, submitCallback}) {
   }
 
   const deleteQuestion = async () => {
-    const deleteResponse = await Request.delete("question/"+question_id)
-    console.log(deleteResponse)
-    if (deleteResponse.code===200){
-      submitCallback()
+    if (confirm("do you really want to delete this question?")){
+      const deleteResponse = await Request.delete("question/"+question_id)
+      console.log(deleteResponse)
+      if (deleteResponse.code===200){
+        submitCallback()
+      }
     }
   }
 
@@ -68,17 +70,24 @@ function CreateQuestion({surveyId, question, editMode, submitCallback}) {
     setChoices(options)
   }
   
-  return (
+  return <div className="question-edit-box">
     <form onSubmit={(event)=>event.preventDefault()}>
-      <label>
-        title:
-        {titleInput}
-      </label>
-      <ChoiceList options={choices} onChangeCallback={handleOptionChange}/>
-      <input onClick={handleSubmit} type="submit" value="Submit" />
-      {editMode&&<button onClick={deleteQuestion}>x</button>}
+      <div className="question-edit-box-top-group">
+        <label className="question-edit-box-label">
+          title:
+          {titleInput}
+        </label>
+        {editMode&&<button className="question-edit-box-button-del" onClick={deleteQuestion}>x</button>}
+      </div>
+      <div className="question-edit-box-choices">
+        <ChoiceList options={choices} onChangeCallback={handleOptionChange}/>
+      </div>
+      <div className="question-edit-box-bottom-group">
+        <input className="question-edit-box-bottom-group-button" onClick={handleSubmit} type="submit" value="Save" />
+        <button className="question-edit-box-bottom-group-button" onClick={submitCallback}>Cancel</button>
+      </div>
     </form>
-  );
+  </div>
 
 }
 

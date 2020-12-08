@@ -35,7 +35,7 @@ function ChoiceList({onChangeCallback, options}) {
         })
         }
       </ul> 
-      <button onClick={addOption}> + </button>
+      <button className="question-edit-box-choices-button-add" onClick={addOption}> + </button>
     </div>
   );
 

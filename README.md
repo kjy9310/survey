@@ -2,7 +2,7 @@
 survery application - bytedance homework
 
 ## tag
-* v0.0 : basic docker & auth function. 
+* v0.0 : basic functioning prototype
 
 ## dependancies
 

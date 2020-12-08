@@ -41,3 +41,8 @@ To build production images set arguments in docker-compose to production
 
 ## ER diagram
 * [Image](https://raw.githubusercontent.com/kjy9310/survey/master/ERD.bmp)
+
+
+## API END POINTS
+For list of API or endpoints, please check out the Wiki
+* [WIKI](https://github.com/kjy9310/survey/wiki)
